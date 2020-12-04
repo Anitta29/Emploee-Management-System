@@ -15,6 +15,19 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
 });
+inquirer.prompt([{
+    type: 'list',
+    name: 'choice',
+    message: 'What would you like to do ?',
+    choices: ['add department', 'view department']
+}])
+    .then(answers => {
+        console.log(answers)
+
+        if (answers.choice == 'add department') {
+            addDepartment();
+        }
+    })
 
 const addDepartment = () => {
     inquirer.prompt([
@@ -27,6 +40,7 @@ const addDepartment = () => {
         .then(response => {
             let sqlQuery = 'INSERT INTO department SET ?';
             let dep = {
+
                 name: response.name,
             };
             connection.query(sqlQuery, dep,
@@ -36,7 +50,28 @@ const addDepartment = () => {
                 });
             connection.end();
 
-        })
+        });
+};
+// addDepartment();
 
+const viewDepartment = () => {
+    let sqlQuery = 'SELECT * FROM department';
+    connection.query(sqlQuery,
+        (error, results) => {
+            if (error) throw error;
+            console.log(results);
+        });
 
-}
+};
+//viewDepartment();
+
+function deleteDepartment() {
+    console.log('Department was deleted');
+    connection.query(
+      "DELETE FROM department WHERE ?",
+      function(err, res) {
+        if (err) throw err;
+        console.log('Department was successfuly deleted!');
+      }
+    );
+  }
